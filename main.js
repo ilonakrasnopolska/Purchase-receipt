@@ -10,6 +10,9 @@ let amountArray = [1, 3, 2, 3]
 //Массив стоимости
 let priceArray = [540, 120, 80, 74]
 
+//Массив общей цены
+let totalSum = []
+
 
 //Функция создает input
 function createInput (placeholder, type) {
@@ -18,6 +21,14 @@ function createInput (placeholder, type) {
   input.placeholder = placeholder
   input.type = type
   return input
+}
+
+//Функция создает strong 
+function createStrong (classList, text) {
+  let strong = document.createElement("strong")
+  strong.classList.add(classList)
+  strong.textContent = text
+  return strong
 }
 
 //Функция создает контейнер в котором лежит 3 элемента input и btn 
@@ -44,32 +55,68 @@ function productList (classList) {
   return list
 }
 
-//Функция создает div в котором лежит strong
-function createFinalPriceBox (classList) {
-  let finalPrice = document.createElement("div")
-  finalPrice.classList.add(classList)
+//Функция создает div
+function createDiv(classList) {
+ 
+  let div = document.createElement("div")
+  div.classList.add(classList)
 
-  let strong = document.createElement("strong")
-  strong.textContent = "Итоговая стоимость:"
-  finalPrice.append(strong)
-  return finalPrice
+  return div
+}
+
+//Функция создает h3 
+function createSubtitle(classList, title) {
+ 
+  let subtitle = document.createElement("h3")
+  subtitle.classList.add(classList)
+  subtitle.textContent = title
+
+  return subtitle
+}
+
+//Функция обьединяет div, h3 и strong для list-item
+function createListContentBox(classList, title, text) {
+  let box = createDiv(classList)
+
+  let subtitle = createSubtitle('list-item-title', title)
+
+  let strong = createStrong('list-item-txt', text)
+
+  box.append(subtitle, strong)
+
+  return box
 }
 
 //Функция создает элементы списка
-function createListItem (index, name, amount, price) {
-  let listItem = document.createElement("li")
-  listItem.classList.add('list-item')
-  listItem.textContent = `${index + 1} ${name} ${amount} ${price}`
+function createListItem (index, name, amount, price, total) {
+  
+  let indexTxt = createStrong('list-item-index', `${index + 1}`) //Индекс элемента
 
-  let editBtn = document.createElement("button")
-  editBtn.classList.add('edit-button')
+  let listItem = document.createElement("li") //list-item
+  listItem.classList.add('list-item')
+
+  let txt1 = createListContentBox(`list-item-txt-box`, `Название`, `${name}`)
+  let txt2 = createListContentBox(`list-item-txt-box`, `Кол-во`, `${amount}`)
+  let txt3 = createListContentBox(`list-item-txt-box`, `Цена`, `${price}`)
+
+  //Общая цена 
+  let txt4 = createListContentBox(`list-item-txt-box`, `Общая цена`, `${total = price * amount}`)
+  totalSum.push(total)
+
+
+  let btnBox = document.createElement("div")  //div-обертка для кнопок
+  btnBox.classList.add('btn-box')
+
+  let editBtn = document.createElement("button") //кнопка редактировать
+  editBtn.classList.add('edit-btn')
   editBtn.textContent = 'Изменить'
 
-  let deleteBtn = document.createElement("button")
+  let deleteBtn = document.createElement("button") //кнопка удалить
   deleteBtn.classList.add('delete-btn')
   deleteBtn.textContent = 'Удалить'
 
-  listItem.append(editBtn, deleteBtn)
+  btnBox.append(editBtn, deleteBtn) //добавляем кнопки в блок div 
+  listItem.append(indexTxt, txt1, txt2, txt3, txt4, btnBox)
 
   return listItem
 }
@@ -89,29 +136,44 @@ let inputBox = createInputBox()
 //Переменная принимает функцию,которая создает ul 
 let list = productList('list')
 
+//Функция создает div в котором лежит strong для финальной цены 
+function createFinalPriceBox (classList, text, amount) {
+  let finalPrice = document.createElement("div")
+  finalPrice.classList.add(classList)
+
+  let strong1 = createStrong('final-price-txt', text)
+  strong1.textContent = text
+
+  let strong2 = createStrong('final-price-txt', amount)
+  strong2.textContent = amount
+
+  finalPrice.append(strong1, strong2)
+  return finalPrice
+}
+
 //Переменная принимает функцию,которая создает блок итоговой цены
-let finalPrice = createFinalPriceBox('final-price-box')
+let finalPrice = createFinalPriceBox('final-price-box', `Итоговая стоимость:`, '')
 
 
 //Функция отрисовки списка
-function render(arrProduct, arrAmount, arrPrice) {
+function render(arrProduct) {
   list.innerHTML = "" //Очищаем список перед отрисовкой
 
   let totalPrice = 0 //Итоговая стоимость
 
   //Начинаем отрисовку используя массив и цикл 
   for (let i = 0; i < arrProduct.length; i++) {
-    let productItem = createListItem(i, productArray[i], amountArray[i], priceArray[i])
+    let productItem = createListItem(i, productArray[i], amountArray[i], priceArray[i], totalSum[i])
     
-    totalPrice = totalPrice + priceArray[i] //Увеличиваем итоговую стоимость
+    totalPrice = totalPrice + totalSum[i] //Увеличиваем итоговую стоимость
     list.append(productItem) //добавляем li в ul 
   }
   // Изменяем текст в элементе общего кол-ва шагов
-  finalPrice.textContent = `Итоговая стоимость: ${totalPrice}`
+  finalPrice = createFinalPriceBox('final-price-box', `Итоговая стоимость:`, `${totalPrice} руб`)
 }
 
 // Запускаем отрисовку списка при загрузке страницы
-render(productArray, amountArray, priceArray)
+render(productArray)
 
 //Добавляем элементы в html document 
 container.append(title, inputBox, list, finalPrice)
