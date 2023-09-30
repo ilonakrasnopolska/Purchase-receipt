@@ -1,0 +1,12 @@
+:root {
+  --grey: #999999;
+  --dark-grey: #414241;
+  --green: #0ca632;
+  --white: #ffffff;
+  --dark-red: #a80505;
+}
+
+:root {
+  --mb: 30px;
+  --mb-xs: 15px;
+}
