@@ -141,3 +141,12 @@ body {
   font-size: 40px;
   font-weight: 400;
 }
+
+.list-item-empty {
+  font-size: 40px;
+  color: var(--grey);
+}
+
+.hidden-final-price {
+display: none;
+}
